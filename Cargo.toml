@@ -8,5 +8,5 @@ edition = "2021"
 
 [dependencies]
 evergreen_relations_macros = { path = "macros" }
-bevy_ecs = { git = "https://github.com/bevyengine/bevy.git", rev = "f9c8f51", default-features = false }
+bevy_ecs = { version = "0.16.0-rc.3", default-features = false }
 smallvec = { version = "1.13", features = ["const_generics"] }
