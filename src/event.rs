@@ -1,13 +1,13 @@
 use core::fmt;
 use std::marker::PhantomData;
 
-use bevy_ecs::{entity::Entity, event::Event};
+use bevy_ecs::prelude::*;
 
 use crate::relation::Relation;
 
-/// An [`Event`] that is emitted when a [`Relation`] is added or removed between
+/// A [`Message`] that is emitted when a [`Relation`] is added or removed between
 /// two entities.
-#[derive(Event)]
+#[derive(Message)]
 pub enum RelationEvent<R: Relation> {
     Added(Entity, Entity, PhantomData<fn(R)>),
     Removed(Entity, Entity, PhantomData<fn(R)>),

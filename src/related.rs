@@ -1,13 +1,12 @@
 use std::{any::type_name, marker::PhantomData};
 
-use bevy_ecs::{
-    component::{Component, ComponentHooks, ComponentId, Immutable, StorageType},
-    entity::Entity,
-    event::Events,
-    world::{DeferredWorld, World},
-};
-use bevy_ecs::component::{ComponentHook, HookContext};
 use crate::{container::EntityContainer, event::RelationEvent, relation::Relatable};
+use bevy_ecs::{
+    component::{Immutable, StorageType},
+    lifecycle::{ComponentHook, HookContext},
+    prelude::*,
+    world::DeferredWorld,
+};
 
 /// [`Component`] used to store [`Relation`] data for a given side of a relationship,
 /// i.e. the [`Relatable`].
@@ -100,7 +99,10 @@ where
     }
 }
 
-fn associate<N: Relatable>(mut world: DeferredWorld, HookContext { entity: a_id, .. }: HookContext ) {
+fn associate<N: Relatable>(
+    mut world: DeferredWorld,
+    HookContext { entity: a_id, .. }: HookContext,
+) {
     world.commands().queue(move |world: &mut World| {
         // Get the IDs of the other entities that this entity is related to.
         let Some(a_related) = world.get::<Related<N>>(a_id).cloned() else {
@@ -128,17 +130,20 @@ fn associate<N: Relatable>(mut world: DeferredWorld, HookContext { entity: a_id,
                     b.insert(b_related);
                 }
 
-                if let Some(mut events) =
-                    world.get_resource_mut::<Events<RelationEvent<N::Relation>>>()
+                if let Some(mut messages) =
+                    world.get_resource_mut::<Messages<RelationEvent<N::Relation>>>()
                 {
-                    events.send(RelationEvent::Added(a_id, b_id, PhantomData));
+                    messages.write(RelationEvent::Added(a_id, b_id, PhantomData));
                 }
             }
         }
     });
 }
 
-fn disassociate<N: Relatable>(mut world: DeferredWorld, HookContext { entity: a_id, .. }: HookContext) {
+fn disassociate<N: Relatable>(
+    mut world: DeferredWorld,
+    HookContext { entity: a_id, .. }: HookContext,
+) {
     // Gets the IDs of the entities that this entity is no longer related to.
     let Some(b_ids) = world.get::<Related<N>>(a_id).cloned() else {
         return;
@@ -172,10 +177,10 @@ fn disassociate<N: Relatable>(mut world: DeferredWorld, HookContext { entity: a_
                     }
                 }
 
-                if let Some(mut events) =
-                    world.get_resource_mut::<Events<RelationEvent<N::Relation>>>()
+                if let Some(mut messages) =
+                    world.get_resource_mut::<Messages<RelationEvent<N::Relation>>>()
                 {
-                    events.send(RelationEvent::Removed(a_id, b_id, PhantomData));
+                    messages.write(RelationEvent::Removed(a_id, b_id, PhantomData));
                 }
             }
         }
