@@ -1,6 +1,6 @@
 use std::{any::type_name, marker::PhantomData};
 
-use crate::{container::EntityContainer, event::RelationEvent, relation::Relatable};
+use crate::{container::EntityContainer, message::RelationMessage, relation::Relatable};
 use bevy_ecs::{
     component::{Immutable, StorageType},
     lifecycle::{ComponentHook, HookContext},
@@ -131,9 +131,9 @@ fn associate<N: Relatable>(
                 }
 
                 if let Some(mut messages) =
-                    world.get_resource_mut::<Messages<RelationEvent<N::Relation>>>()
+                    world.get_resource_mut::<Messages<RelationMessage<N::Relation>>>()
                 {
-                    messages.write(RelationEvent::Added(a_id, b_id, PhantomData));
+                    messages.write(RelationMessage::Added(a_id, b_id, PhantomData));
                 }
             }
         }
@@ -178,9 +178,9 @@ fn disassociate<N: Relatable>(
                 }
 
                 if let Some(mut messages) =
-                    world.get_resource_mut::<Messages<RelationEvent<N::Relation>>>()
+                    world.get_resource_mut::<Messages<RelationMessage<N::Relation>>>()
                 {
-                    messages.write(RelationEvent::Removed(a_id, b_id, PhantomData));
+                    messages.write(RelationMessage::Removed(a_id, b_id, PhantomData));
                 }
             }
         }
