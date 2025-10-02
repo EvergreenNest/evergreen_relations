@@ -4,7 +4,7 @@ members = ["macros"]
 [package]
 name = "evergreen_relations"
 version = "0.2.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
 evergreen_relations_macros = { path = "macros" }
