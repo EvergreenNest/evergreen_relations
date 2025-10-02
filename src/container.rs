@@ -4,7 +4,7 @@ use std::{
 };
 
 use bevy_ecs::entity::{Entity, EntityHashSet};
-use smallvec::{smallvec, SmallVec};
+use smallvec::{SmallVec, smallvec};
 
 /// A container for the other entities that this entity is related to.
 ///
