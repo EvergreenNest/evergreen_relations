@@ -1,19 +1,19 @@
 use core::fmt;
 use std::marker::PhantomData;
 
-use bevy_ecs::{entity::Entity, event::Event};
+use bevy_ecs::prelude::*;
 
 use crate::relation::Relation;
 
-/// An [`Event`] that is emitted when a [`Relation`] is added or removed between
+/// A [`Message`] that is emitted when a [`Relation`] is added or removed between
 /// two entities.
-#[derive(Event)]
-pub enum RelationEvent<R: Relation> {
+#[derive(Message)]
+pub enum RelationMessage<R: Relation> {
     Added(Entity, Entity, PhantomData<fn(R)>),
     Removed(Entity, Entity, PhantomData<fn(R)>),
 }
 
-impl<R: Relation> fmt::Debug for RelationEvent<R> {
+impl<R: Relation> fmt::Debug for RelationMessage<R> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Added(arg0, arg1, _) => f.debug_tuple("Added").field(arg0).field(arg1).finish(),
@@ -24,7 +24,7 @@ impl<R: Relation> fmt::Debug for RelationEvent<R> {
     }
 }
 
-impl<R: Relation> PartialEq for RelationEvent<R> {
+impl<R: Relation> PartialEq for RelationMessage<R> {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (Self::Added(l0, l1, _), Self::Added(r0, r1, _))
@@ -34,9 +34,9 @@ impl<R: Relation> PartialEq for RelationEvent<R> {
     }
 }
 
-impl<R: Relation> Eq for RelationEvent<R> {}
+impl<R: Relation> Eq for RelationMessage<R> {}
 
-impl<R: Relation> Clone for RelationEvent<R> {
+impl<R: Relation> Clone for RelationMessage<R> {
     fn clone(&self) -> Self {
         match self {
             Self::Added(arg0, arg1, _) => Self::Added(*arg0, *arg1, PhantomData),

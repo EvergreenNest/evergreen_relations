@@ -1,9 +1,9 @@
 use std::marker::PhantomData;
 
-use bevy_ecs::{entity::Entity, event::Events, world::World};
+use bevy_ecs::prelude::*;
 
 use evergreen_relations::{
-    event::RelationEvent,
+    message::RelationMessage,
     related::Related,
     relation::{Relatable, Relation},
 };
@@ -174,7 +174,7 @@ fn looped_add_remove() {
 fn events() {
     let mut world = World::new();
 
-    world.init_resource::<Events<RelationEvent<Marriage>>>();
+    world.init_resource::<Messages<RelationMessage<Marriage>>>();
 
     let a = world.spawn_empty().id();
     let b = world.spawn(SignificantOther::new(a)).id();
@@ -191,10 +191,10 @@ fn events() {
 
     assert_eq!(
         world
-            .resource_mut::<Events<RelationEvent<Marriage>>>()
+            .resource_mut::<Messages<RelationMessage<Marriage>>>()
             .drain()
             .collect::<Vec<_>>(),
-        vec![RelationEvent::<Marriage>::Added(b, a, PhantomData)]
+        vec![RelationMessage::<Marriage>::Added(b, a, PhantomData)]
     );
 
     world.entity_mut(a).remove::<SignificantOther>();
@@ -205,9 +205,9 @@ fn events() {
 
     assert_eq!(
         world
-            .resource_mut::<Events<RelationEvent<Marriage>>>()
+            .resource_mut::<Messages<RelationMessage<Marriage>>>()
             .drain()
             .collect::<Vec<_>>(),
-        vec![RelationEvent::<Marriage>::Removed(a, b, PhantomData)]
+        vec![RelationMessage::<Marriage>::Removed(a, b, PhantomData)]
     );
 }
