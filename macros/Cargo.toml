@@ -1,7 +1,12 @@
 [package]
 name = "evergreen_relations_macros"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
+description = "Macros for the evergreen_relations library."
+license = "MIT OR Apache-2.0"
+documentation = "https://docs.rs/evergreen_relations_macros"
+homepage = "https://github.com/EvergreenNest/evergreen_relations"
+repository = "https://github.com/EvergreenNest/evergreen_relations"
 
 [lib]
 proc-macro = true
