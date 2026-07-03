@@ -1,42 +1,16 @@
 use std::{any::type_name, marker::PhantomData};
 
 use crate::{container::EntityContainer, message::RelationMessage, relation::Relatable};
-use bevy_ecs::{
-    component::{Immutable, StorageType},
-    lifecycle::{ComponentHook, HookContext},
-    prelude::*,
-    world::DeferredWorld,
-};
+use bevy_ecs::{lifecycle::HookContext, prelude::*, world::DeferredWorld};
 
 /// [`Component`] used to store [`Relation`] data for a given side of a relationship,
 /// i.e. the [`Relatable`].
 ///
 /// [`Relation`]: crate::relation::Relation
+#[derive(Component)]
+#[component(immutable, on_insert = associate::<N>, on_discard = disassociate::<N>, on_remove = disassociate::<N>)]
 pub struct Related<N: Relatable> {
     pub(crate) container: N::Container,
-}
-
-impl<N: Relatable> Component for Related<N> {
-    const STORAGE_TYPE: StorageType = StorageType::Table;
-    type Mutability = Immutable;
-
-    /*fn register_component_hooks(hooks: &mut ComponentHooks) {
-        hooks.on_insert(associate::<N>);
-        hooks.on_replace(disassociate::<N>);
-        hooks.on_remove(disassociate::<N>);
-    }*/
-
-    fn on_insert() -> Option<ComponentHook> {
-        Some(associate::<N>)
-    }
-
-    fn on_replace() -> Option<ComponentHook> {
-        Some(disassociate::<N>)
-    }
-
-    fn on_remove() -> Option<ComponentHook> {
-        Some(disassociate::<N>)
-    }
 }
 
 impl<N: Relatable> Related<N> {
